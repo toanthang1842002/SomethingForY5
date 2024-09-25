@@ -1,0 +1,62 @@
+[
+    {
+        "File name": "2g_dll_slave.dll",
+        "Version": "1.0.0.1",
+        "MD5": "10c376ad5a4c784cafa044b8b248fede",
+        "SHA-1": "49d15f0bb30f02aaa016cc93c61d9e9f7041a8dc"
+    },
+    {
+        "File name": "2012plugin.dll",
+        "Version": "2.5.0.37",
+        "MD5": "8903ce28fa0f88f3ddd7806dbeef180f",
+        "SHA-1": "bdd8dac36f6dc4deb4b5d038b3610eb0dabaf3d7"
+    },
+    {
+        "File name": "2012plugin.dll",
+        "Version": "2.1.0.17",
+        "MD5": "0bf78445e497163b3f4b39252907a656",
+        "SHA-1": "7f2340180ae7f13b51306a7b90fe78b6c399e2e1"
+    },
+    {
+        "File name": "2g_dll_bfldongle.dll",
+        "Version": "1.0.0.1",
+        "MD5": "9532b4d3b06b0949fb8004858572056a",
+        "SHA-1": "bcdef20eae1c78cb9170df81b199cc308d857e8b"
+    },
+    {
+        "File name": "2g_dll_bfluart.dll",
+        "Version": "1.0.0.1",
+        "MD5": "79ca3acfc1c8548553a157b585bf8206",
+        "SHA-1": "a710796a480f65358205dd47d8fa179a96dc0bab"
+    },
+    {
+        "File name": "2g_dll_bflusb.dll",
+        "Version": "1.2.4.0",
+        "MD5": "f49d84d8efc0ac3c0d9569add4e99769",
+        "SHA-1": "45e6aeb72f280d5960cb8040ff949a9559fb0660"
+    },
+    {
+        "File name": "2g_dll_slave.dll",
+        "Version": "1.0.0.1",
+        "MD5": "10c376ad5a4c784cafa044b8b248fede",
+        "SHA-1": "49d15f0bb30f02aaa016cc93c61d9e9f7041a8dc"
+    },
+    {
+        "File name": "34tvctrl.dll",
+        "Version": "2.3.1.1",
+        "MD5": "c44353a477dff9f925e74870393bddb1",
+        "SHA-1": "780ce968b8d036a2e9d41ef3b2bf185afb051ad8"
+    },
+    {
+        "File name": "34tvctrl.dll",
+        "Version": "1.5.0.0",
+        "MD5": "df8e56ad027b373bf34e9a18ab085eb3",
+        "SHA-1": "1b8b2f5ab572ad9d8374c63b1e02a95858a17cdc"
+    },
+    {
+        "File name": "3cthnk16.dll",
+        "Version": "0.0.0.0",
+        "MD5": "265d1220027c4998ab38f2ac511d0270",
+        "SHA-1": "8e78bbd700fb58e5c22ae418a81761a34a7b0d1c"
+    }
+]

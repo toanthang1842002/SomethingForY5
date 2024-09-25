@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import requests
+import requests,os
 import Get_Hash
 
 if __name__ == '__main__':
