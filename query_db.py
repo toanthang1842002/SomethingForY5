@@ -3,7 +3,9 @@ import json, os
 
 
 #############################################################################
+CREDENTIAL_COLLECTION_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'credential')
 DB_COLLECTION_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'DataBase')
+
 #############################################################################
 
 try:
@@ -17,6 +19,19 @@ try:
 except Exception as ex:
   print(ex + " connect")
 
+
+def write_file(data):
+  path_list_file_name = os.path.join(CREDENTIAL_COLLECTION_PATH, "list_file_name.txt")
+  try:
+    if not os.path.exists(path_list_file_name):
+      with open(path_list_file_name, 'w') as file:
+        file.writelines(data+'\n')
+    else:
+      with open(path_list_file_name, 'a') as file:
+        file.writelines(data+'\n')
+  except Exception as ex:
+    print(ex)
+
 def create_table():
   create_table_query = '''
       CREATE TABLE IF NOT EXISTS Legitimate_DLL (
@@ -28,6 +43,7 @@ def create_table():
       );
       '''
   cursor.execute(create_table_query)
+
 
 def insert_data(file_data):
   with open(file_data, 'r') as f:
@@ -46,16 +62,25 @@ def find_data(Keyword):
   find_data_query = f'''
         SELECT * FROM Legitimate_DLL WHERE file_name = "{Keyword}"
         '''
-
   result = cursor.execute(find_data_query)
   if result:
     list_sha1 = cursor.fetchall()
-    print (type(list_sha1[0][0]))
-  return "True"
+    return list_sha1[0][0]
+  return "False"
 
+def get_data(Keyword):
+
+    query_get_list = f'''
+        SELECT {Keyword} FROM dll_database.legitimate_dll;
+    '''
+    cursor.execute(query_get_list)
+    result = cursor.fetchall()
+    sets = sorted({name[0] for name in result})
+    for name in sets:
+      write_file(name)
 if __name__ == '__main__':
-  create_table()
-  insert_data(os.path.join(DB_COLLECTION_PATH,"DataBaseCollection.json"))
-  # Keyword = "1111.dll"
+  # create_table()
+  # insert_data(os.path.join(DB_COLLECTION_PATH,"DataBaseCollection.json"))
+  # Keyword = "2012plugin.dll"
   # print(find_data(Keyword))
   mydb.close()
