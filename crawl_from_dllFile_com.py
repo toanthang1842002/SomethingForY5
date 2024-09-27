@@ -80,3 +80,8 @@ def Get_list_file_name(url):
             Get_info_file(new_url)
     # new_url = "https://www.dll-files.com" + "/csseqchk.dll.html"
     # # Get_info_file(new_url)
+
+if __name__ == '__main__':
+    url = "https://www.dll-files.com/34tvctrl.dll.html"
+    # Get_list_file_name(url)
+    response = send_requests(url)

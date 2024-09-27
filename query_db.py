@@ -46,7 +46,8 @@ def create_table():
 
 
 def insert_data(file_data):
-  with open(file_data, 'r') as f:
+  path_file_data = os.path.join(DB_COLLECTION_PATH, file_data)
+  with open(path_file_data, 'r') as f:
     data = json.load(f)
   print(data)
   insert_query = '''
@@ -58,29 +59,29 @@ def insert_data(file_data):
     cursor.execute(insert_query, (dll['File name'], dll['Version'], dll['MD5'], dll['SHA-1']))
   mydb.commit()
 
-def find_data(Keyword):
+def find_data(keyword, condition):
   find_data_query = f'''
-        SELECT * FROM Legitimate_DLL WHERE file_name = "{Keyword}"
+        SELECT * FROM dll_database.legitimate_dll WHERE {condition} = "{keyword}"
         '''
-  result = cursor.execute(find_data_query)
-  if result:
-    list_sha1 = cursor.fetchall()
-    return list_sha1[0][0]
-  return "False"
+  cursor.execute(find_data_query)
+  result = cursor.fetchall()
+  if result: return "true"
+  return "false"
 
-def get_data(Keyword):
+def get_list_file_name():
 
     query_get_list = f'''
-        SELECT {Keyword} FROM dll_database.legitimate_dll;
+        SELECT file_name FROM dll_database.legitimate_dll;
     '''
     cursor.execute(query_get_list)
     result = cursor.fetchall()
     sets = sorted({name[0] for name in result})
     for name in sets:
       write_file(name)
+
 if __name__ == '__main__':
   # create_table()
   # insert_data(os.path.join(DB_COLLECTION_PATH,"DataBaseCollection.json"))
   # Keyword = "2012plugin.dll"
-  # print(find_data(Keyword))
+  print(find_data('c44353a477dff9f925e74870393bddb1','md5'))
   mydb.close()
