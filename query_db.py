@@ -37,7 +37,7 @@ def create_table():
       CREATE TABLE IF NOT EXISTS Legitimate_DLL (
           id INT AUTO_INCREMENT PRIMARY KEY,  
           file_name VARCHAR(255) NOT NULL,
-          version VARCHAR(50) NOT NULL,
+          version VARCHAR(255) NOT NULL,
           md5 VARCHAR(32) NOT NULL,
           sha1 VARCHAR(40) NOT NULL
       );
@@ -49,14 +49,16 @@ def insert_data(file_data):
   path_file_data = os.path.join(DB_COLLECTION_PATH, file_data)
   with open(path_file_data, 'r') as f:
     data = json.load(f)
-  print(data)
   insert_query = '''
       INSERT INTO Legitimate_DLL (file_name, version, md5, sha1)
       VALUES (%s, %s, %s, %s)
       '''
 
   for dll in data:
-    cursor.execute(insert_query, (dll['File name'], dll['Version'], dll['MD5'], dll['SHA-1']))
+    try:
+      cursor.execute(insert_query, (dll['File name'], dll['Version'], dll['MD5'], dll['SHA-1']))
+    except Exception as ex:
+      print (dll)
   mydb.commit()
 
 def find_data(keyword, condition):
@@ -65,8 +67,8 @@ def find_data(keyword, condition):
         '''
   cursor.execute(find_data_query)
   result = cursor.fetchall()
-  if result: return "true"
-  return "false"
+  if result: return True
+  return False
 
 def get_list_file_name():
 
@@ -80,8 +82,8 @@ def get_list_file_name():
       write_file(name)
 
 if __name__ == '__main__':
-  # create_table()
-  # insert_data(os.path.join(DB_COLLECTION_PATH,"DataBaseCollection.json"))
+  create_table()
+  insert_data(os.path.join(DB_COLLECTION_PATH,"DataBaseCollection2.json"))
   # Keyword = "2012plugin.dll"
-  print(find_data('c44353a477dff9f925e74870393bddb1','md5'))
+  # print(find_data('c44353a477dff9f925e74870393bddb1','md5'))
   mydb.close()

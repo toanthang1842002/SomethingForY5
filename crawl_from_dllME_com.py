@@ -10,21 +10,19 @@ import query_db
 #############################################################################
 DB_COLLECTION_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'DataBase')
 CREDENTIAL_COLLECTION_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'credential')
-
+GEN_HTML_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'gen_html')
 host_ip = "localhost"
 #############################################################################
-version_pattern = r'Version:\s*&lt;strong style="color:#222;"&gt;(.*?)&lt;/strong&gt;'
-md5_pattern = r'MD5\s*(.*?)&lt'
-sha1_pattern = r'SHA1\s*(.*?)&lt'
+
 #############################################################################
-def write_file(text, option = 'w'):
-    with open(os.path.join(CREDENTIAL_COLLECTION_PATH, 'gen_html.txt'), option, encoding='utf-8') as file:
+def write_file(text):
+    with open(os.path.join(GEN_HTML_PATH, 'gen_html.txt'), 'w') as file:
         file.writelines(str(text))
 
 def write_to_json_file(filename, version, md5,sha1, error = 0):
     dict = {
         'File name': filename,
-        'Version': version.text,
+        'Version': version,
         'MD5': md5,
         'SHA-1': sha1
     }
@@ -55,47 +53,48 @@ def send_requests(url):
             json_response = response.json()
             if json_response.get('status') == 'ok':
                 html = json_response['solution']['response']
+                if html.find('MD5') == -1:
+                    return False
                 write_file(html)
-        response.raise_for_status()
+            response.raise_for_status()
+            return True
+        else:
+            return False
     except requests.exceptions.HTTPError as http_err:
         print(f"HTTP error occurred: {http_err}")
     except Exception as err:
         print(f"Other error occurred: {err}")
-    else:
-        return "false"
 
-def get_info_file(url, filename = "test"):
+def get_info_file(url, filename):
     print (url)
-    # time.sleep(1)
     res = send_requests(url)
-    if res == "false":
-        return res
-    with open(os.path.join(CREDENTIAL_COLLECTION_PATH, 'gen_html.txt'), 'r', encoding='utf-8') as file:
+    if not res:
+        print ("[-] Not Found")
+        return False
+    with open(os.path.join(GEN_HTML_PATH, 'gen_html.txt'), 'r', encoding='utf-8') as file:
         html_content = file.read().replace('\\', '')
-    print(html_content)
+
     version_pattern = r'Version:\s*&lt;strong style="color:#222;"&gt;(.*?)&lt;/strong&gt;'
     md5_pattern = r'MD5\s*(.*?)&lt'
     sha1_pattern = r'SHA1\s*(.*?)&lt'
-    versions = re.find(pattern, html_content)
-
-    # In ra kết quả
-    for version in versions:
-        print(f"Found Version: {version}")
-
+    _versions = re.findall(version_pattern, html_content)
+    _md5 = re.findall(md5_pattern, html_content)
+    _sha1 = re.findall(sha1_pattern, html_content)
+    for pos in range(len(_versions)):
+        q = query_db.find_data(_sha1[pos],'sha1')
+        if not q:
+            write_to_json_file(filename, _versions[pos], _md5[pos], _sha1[pos])
+    return True
 
 
 if __name__ == '__main__':
-    url = "https://www.dllme.com/dll/files/34tvctrl/versions"
-    # Get_list_file_name(url)
-    # with open(os.path.join(CREDENTIAL_COLLECTION_PATH, 'list_file_name.txt')) as file:
-    #     list_file_name = file.read().split('\n')
-    # for file_name in list_file_name:
-    #     file_name = file_name.replace(".dll", '')
-    #     page = 0
-    #     while True:
-    #         page += 1
-    #         url = f"https://www.dllme.com/dll/files/{file_name}/versions.html?sort=version&arch=&ajax=true&page={page}"
-    #         result = get_info_file(url, file_name)
-    #         if result == "false":
-    #             break
-    result = get_info_file('https://www.dllme.com/dll/files/34tvctrl/versions.html?sort=version&arch=&ajax=true&page=1', '2')
+    with open(os.path.join(CREDENTIAL_COLLECTION_PATH, 'list_file_name.txt')) as file:
+        list_file_name = file.read().split('\n')
+    for file_name in list_file_name:
+        file_name = file_name.replace(".dll", '')
+        page = 0
+        while True:
+            page += 1
+            url = f"https://www.dllme.com/dll/files/{file_name}/versions.html?sort=version&arch=&ajax=true&page={page}"
+            if not get_info_file(url, file_name):
+                break
