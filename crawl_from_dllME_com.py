@@ -1,6 +1,6 @@
 import json
 import os
-import time, httpx
+import time,re
 
 from bs4 import BeautifulSoup
 import requests
@@ -13,8 +13,12 @@ CREDENTIAL_COLLECTION_PATH = os.path.join(os.path.dirname(os.path.abspath(__file
 
 host_ip = "localhost"
 #############################################################################
+version_pattern = r'Version:\s*&lt;strong style="color:#222;"&gt;(.*?)&lt;/strong&gt;'
+md5_pattern = r'MD5\s*(.*?)&lt'
+sha1_pattern = r'SHA1\s*(.*?)&lt'
+#############################################################################
 def write_file(text, option = 'w'):
-    with open(os.path.join(CREDENTIAL_COLLECTION_PATH, 'gen_html.txt'), option) as file:
+    with open(os.path.join(CREDENTIAL_COLLECTION_PATH, 'gen_html.txt'), option, encoding='utf-8') as file:
         file.writelines(str(text))
 
 def write_to_json_file(filename, version, md5,sha1, error = 0):
@@ -58,30 +62,25 @@ def send_requests(url):
     except Exception as err:
         print(f"Other error occurred: {err}")
     else:
-        return BeautifulSoup(response.content, 'html.parser')
+        return "false"
 
 def get_info_file(url, filename = "test"):
     print (url)
     # time.sleep(1)
-    # res = send_requests(url)
-    # if res == "false":
-    #     return res
-    with open(os.path.join(CREDENTIAL_COLLECTION_PATH, 'gen_html.txt'), 'r') as file:
-        data = file.read()
-    soup = BeautifulSoup(data, 'html.parser')
-    list = soup.find_all('div', {'id':'filerow-content'})
-    if not soup.find_all('div'):
-        return 'false'
-    try:
-        for section in soup.find_all('div', {'id':'filerow-content'}):
-            version = section.find('div',{'id':'col-two', 'class': 'overflow-ellipsis'}).find('strong')
-            md5 = section.find('div', class_ = 'hash f11').text.split(" ")[1]
-            sha1 = section.find('div', class_='hash f11 overflow-ellipsis').text.split(" ")[1]
-            if query_db.find_data(md5,'md5') == "false":
-                write_to_json_file(filename, version, md5, sha1)
-        return "true"
-    except Exception as err:
-        print(f"Other error occurred: {err}      {filename}")
+    res = send_requests(url)
+    if res == "false":
+        return res
+    with open(os.path.join(CREDENTIAL_COLLECTION_PATH, 'gen_html.txt'), 'r', encoding='utf-8') as file:
+        html_content = file.read().replace('\\', '')
+    print(html_content)
+    version_pattern = r'Version:\s*&lt;strong style="color:#222;"&gt;(.*?)&lt;/strong&gt;'
+    md5_pattern = r'MD5\s*(.*?)&lt'
+    sha1_pattern = r'SHA1\s*(.*?)&lt'
+    versions = re.find(pattern, html_content)
+
+    # In ra kết quả
+    for version in versions:
+        print(f"Found Version: {version}")
 
 
 
@@ -99,4 +98,4 @@ if __name__ == '__main__':
     #         result = get_info_file(url, file_name)
     #         if result == "false":
     #             break
-    result = get_info_file('1', '2')
+    result = get_info_file('https://www.dllme.com/dll/files/34tvctrl/versions.html?sort=version&arch=&ajax=true&page=1', '2')
